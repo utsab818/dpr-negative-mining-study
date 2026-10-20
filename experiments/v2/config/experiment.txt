@@ -1,0 +1,23 @@
+Experiment: DPR Negative Mining V2
+Dataset: SQuAD
+Training examples: 128
+Mining passages: 1000
+Evaluation queries: 1000
+Evaluation passages: 1000
+Model: Two independent DistilBERT encoders
+Initial checkpoint: dpr_phase1.pt
+Seed: 42
+Learning rate: 2e-5
+Question max tokens: 48
+Passage max tokens: 192
+Sampler: Seeded epoch-based permutation, drop incomplete batches
+Hardware: Apple M4 MacBook Air, MPS
+
+Run 1: random, K=4, batch=4, steps=32
+Run 2: hard, K=4, batch=4, steps=32
+Run 3: mixed, K=4, batch=4, steps=32
+Run 4: inbatch, K=32, batch=33, steps=32
+Run 5: inbatch, K=32, batch=33, steps=4
+
+Evaluation: Recall@1, Recall@5, Recall@20, MRR@10
+Results: experiments/v2/results/seed42_1000.csv
