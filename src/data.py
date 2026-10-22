@@ -43,6 +43,19 @@ class DPRDataset(Dataset):
     def __getitem__(self, index):
         return self.examples[index]
 
+    
+    def get_example(self, index):
+        example = self.examples[index]
+
+        return {
+            "question_id": index,
+            "positive_passage_id": index,
+            "question": example["question"],
+            "passage": example["passage"],
+            "answers": example["answers"],
+        }
+
+
 
 def create_dataloader(
     split="train",

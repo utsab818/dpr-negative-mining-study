@@ -1,395 +1,221 @@
+"""Versioned, answer-filtered DPR hard-negative mining for V3.
+
+Run from the repository root:
+    python3 -m src.mine_negatives --num-questions 16 --num-passages 64 \
+        --batch-size 4 --output-dir experiments/v3/mining/smoke
+
+Full run (intended for Colab A100):
+    python3 -m src.mine_negatives --num-questions 2000 --num-passages 5000 \
+        --batch-size 32 --output-dir experiments/v3/mining/full
+"""
+
+import argparse
+import hashlib
+import json
+from pathlib import Path
 
 import torch
 from transformers import AutoTokenizer
 
-from src.model import DPR, MODEL_NAME
 from src.data import DPRDataset
+from src.model import DPR, MODEL_NAME
 
-import torch.nn.functional as F
+
+def choose_device():
+    if torch.cuda.is_available():
+        return torch.device("cuda")
+    if torch.backends.mps.is_available():
+        return torch.device("mps")
+    return torch.device("cpu")
+
+
+def fingerprint_texts(texts):
+    """Order-sensitive hash; separates items unambiguously by length."""
+    digest = hashlib.sha256()
+    for text in texts:
+        value = text.encode("utf-8")
+        digest.update(len(value).to_bytes(8, "big"))
+        digest.update(value)
+    return digest.hexdigest()
+
+
+def encode_texts(model, tokenizer, texts, kind, device, batch_size, max_length):
+    embeddings = []
+    encoder = model.encode_passage if kind == "passage" else model.encode_question
+    with torch.inference_mode():
+        for start in range(0, len(texts), batch_size):
+            chunk = texts[start:start + batch_size]
+            inputs = tokenizer(
+                chunk, padding=True, truncation=True,
+                max_length=max_length, return_tensors="pt"
+            ).to(device)
+            encoded = encoder(inputs["input_ids"], inputs["attention_mask"])
+            embeddings.append(encoded.float().cpu())
+            if start == 0 or (start // batch_size + 1) % 25 == 0:
+                print(f"Encoded {kind}s: {min(start + batch_size, len(texts))}/{len(texts)}", flush=True)
+    return torch.cat(embeddings, dim=0)
+
+
+def mine(Q, P, answers_by_query, passages, num_hard):
+    """Scores on CPU; scans ranked candidates until K pass answer filtering."""
+    scores = Q @ P.T
+    n_questions, n_passages = scores.shape
+    assert n_questions <= n_passages
+    positive_ids = torch.arange(n_questions)
+
+    # Diagnostics BEFORE excluding the designated positive.
+    positive_scores = scores[positive_ids, positive_ids].clone()
+    # Counts outranking passages; ties can make this differ from stable sort rank.
+    positive_ranks = (scores > positive_scores[:, None]).sum(dim=1) + 1
+
+    scores[positive_ids, positive_ids] = -float("inf")
+    hardest_scores = scores.max(dim=1).values
+    margins = positive_scores - hardest_scores
+
+    hard_ids = torch.empty((n_questions, num_hard), dtype=torch.long)
+    hard_scores = torch.empty((n_questions, num_hard), dtype=torch.float32)
+    rejected_answer_counts = []
+    scanned_counts = []
+    folded_passages = [p.casefold() for p in passages]
+
+    for i in range(n_questions):
+        # Return sorted IDs for this question; one row at a time avoids
+        # allocating another full [num_questions, num_passages] ranking matrix.
+        ranking = torch.argsort(scores[i], descending=True)
+        answers = [a.strip().casefold() for a in answers_by_query[i] if a.strip()]
+        chosen = []
+        rejected = 0
+        examined = 0
+        for j_tensor in ranking:
+            j = int(j_tensor)
+            if j == i:
+                continue
+            examined += 1
+            if any(answer in folded_passages[j] for answer in answers):
+                rejected += 1
+                continue
+            chosen.append(j)
+            if len(chosen) == num_hard:
+                break
+
+        if len(chosen) < num_hard:
+            raise RuntimeError(f"Only {len(chosen)} valid negatives for query {i}")
+        hard_ids[i] = torch.tensor(chosen, dtype=torch.long)
+        hard_scores[i] = scores[i, chosen]
+        rejected_answer_counts.append(rejected)
+        scanned_counts.append(examined)
+
+    diagnostics = {
+        "mean_positive_rank": float(positive_ranks.float().mean().item()),
+        "median_positive_rank": float(positive_ranks.float().median().item()),
+        "positive_rank_1_count": int((positive_ranks == 1).sum().item()),
+        "negative_margin_count": int((margins < 0).sum().item()),
+        "mean_positive_negative_margin": float(margins.mean().item()),
+        "recall_at_1": float((positive_ranks <= 1).float().mean().item()),
+        "recall_at_5": float((positive_ranks <= 5).float().mean().item()),
+        "recall_at_20": float((positive_ranks <= 20).float().mean().item()),
+        "mean_answer_rejections_per_query": sum(rejected_answer_counts) / n_questions,
+        "total_answer_rejections": sum(rejected_answer_counts),
+        "max_candidates_scanned_for_one_query": max(scanned_counts),
+    }
+    return hard_ids, hard_scores, diagnostics
 
 
 def main():
-    device = torch.device(
-        "mps" if torch.backends.mps.is_available() else "cpu"
-    )
+    parser = argparse.ArgumentParser(description="V3 DPR hard-negative miner")
+    parser.add_argument("--num-questions", type=int, default=2000)
+    parser.add_argument("--num-passages", type=int, default=5000)
+    parser.add_argument("--num-hard", type=int, default=4)
+    parser.add_argument("--batch-size", type=int, default=8)
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--checkpoint", default="dpr_phase1.pt")
+    parser.add_argument("--output-dir", default="experiments/v3/mining/full")
+    args = parser.parse_args()
 
-    print("Device:", device)
+    if not (1 <= args.num_questions <= args.num_passages):
+        parser.error("Require 1 <= num-questions <= num-passages")
+    if not (1 <= args.num_hard < args.num_passages):
+        parser.error("Require 1 <= num-hard < num-passages")
+    if args.batch_size < 1:
+        parser.error("batch-size must be positive")
 
-    # 1. Load the training dataset
-    dataset = DPRDataset(
-        split="train",
-        max_samples=1000
-    )
+    output_dir = Path(args.output_dir)
+    # Never overwrite an existing completed run.
+    for filename in ("mined_negatives.pt", "passage_index.pt", "manifest.json"):
+        if (output_dir / filename).exists():
+            raise FileExistsError(f"Output exists: {output_dir / filename}")
+    if not Path(args.checkpoint).is_file():
+        raise FileNotFoundError(f"Warm-up checkpoint not found: {args.checkpoint}")
 
-    passages = [
-        example["passage"] for example in dataset.examples
-    ]
+    torch.manual_seed(args.seed)
+    device = choose_device()
+    print("Device:", device, flush=True)
+    print("Questions:", args.num_questions, "Passages:", args.num_passages, flush=True)
 
-    questions = [
-        example["question"] for example in dataset.examples[:128]
-    ]
+    # A single deterministic dataset prefix guarantees training positives
+    # occupy passage IDs 0..num_questions-1 in the mining corpus.
+    dataset = DPRDataset(split="train", max_samples=args.num_passages)
+    if len(dataset.examples) != args.num_passages:
+        raise RuntimeError("Dataset provided fewer unique passages than requested")
+    passages = [e["passage"] for e in dataset.examples]
+    subset = dataset.examples[:args.num_questions]
+    questions = [e["question"] for e in subset]
+    answers_by_query = [e["answers"] for e in subset]
+    passage_hash = fingerprint_texts(passages)
+    question_hash = fingerprint_texts(questions)
 
-    print("Number of questions:", len(questions))
-
-
-    print("Number of passages:", len(passages))
-
-    # 2. Load the tokenizer
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-
-    context = dataset.examples[0]["passage"]
-
-    tokens = tokenizer(
-        context,
-        truncation=True,
-        max_length=192
-    )
-
-    visible_text = tokenizer.decode(
-        tokens["input_ids"],
-        skip_special_tokens=True
-    )
-
-    print("\nORIGINAL CONTEXT LENGTH:")
-    print(len(tokenizer.encode(context, truncation=False)))
-
-    print("\nTRUNCATED CONTEXT:")
-    print(visible_text)
-
-    # 3. Initialize the dual encoder
     model = DPR().to(device)
-
-    # 4. Restore the weights from our training run
-    checkpoint = torch.load(
-        "dpr_phase1.pt",
-        map_location=device,
-        weights_only=True
-    )
-
-    model.load_state_dict(checkpoint)
-
-    # 5. Switch to evaluation mode (inference mode)
+    state = torch.load(args.checkpoint, map_location="cpu", weights_only=True)
+    model.load_state_dict(state)
     model.eval()
 
-    # 6. Encode the entire passage corpus
-    passage_embeddings = []
-
-    with torch.no_grad():
-        for start in range(0, len(passages), 8):
-            batch = passages[start:start + 8]
-
-            inputs = tokenizer(
-                batch,
-                padding=True,
-                truncation=True,
-                max_length=192,
-                return_tensors="pt"
-            ).to(device)
-
-            embeddings = model.encode_passage(
-                inputs["input_ids"],
-                inputs["attention_mask"]
-            )
-
-            # Move embeddings to CPU
-            passage_embeddings.append(embeddings.cpu())
-
-    P = torch.cat(passage_embeddings, dim=0)
-
-    print("Passage embedding matrix shape:", P.shape)
-
-    # 7. Store embeddings for our next step
-    torch.save(
-        {
-            "passages": passages,
-            "embeddings": P
-        },
-        "passage_index.pt"
-    )
-
-    print("Saved passage embeddings to passage_index.pt")
-
-
-    # 8. Encode the training questions
-    question_embeddings = []
-
-    with torch.no_grad():
-        for start in range(0, len(questions), 8):
-            batch = questions[start:start + 8]
-
-            inputs = tokenizer(
-                batch,
-                padding=True,
-                truncation=True,
-                max_length=48,
-                return_tensors="pt"
-            ).to(device)
-
-            embeddings = model.encode_question(
-                inputs["input_ids"],
-                inputs["attention_mask"]
-            )
-
-            question_embeddings.append(embeddings.cpu())
-
-    Q = torch.cat(question_embeddings, dim=0)
-
-    print("Question embedding matrix:", Q.shape)
-
-    # 9. Compare every question against every passage
-    scores = Q @ P.T
-
-
-    # Analyze positive passage ranks for all queries
-
-    # Sort all passage IDs by descending similarity
-    ranked_ids = torch.argsort(
-        scores,
-        dim=1,
-        descending=True
-    )
-
-    # Positive passage i is located at index i
-    positive_ids = torch.arange(len(questions))
-
-    # Locate each positive passage in the ranked results
-    matches = ranked_ids == positive_ids.unsqueeze(1)
-
-    # Convert zero-based positions into one-based ranks
-    positive_ranks = matches.int().argmax(dim=1) + 1
-
-    # Extract positive similarity scores
-    positive_scores = scores[
-        torch.arange(len(questions)),
-        positive_ids
-    ]
-
-    # Exclude known positives for margin calculation
-    negative_scores = scores.clone()
-
-    negative_scores[
-        torch.arange(len(questions)),
-        positive_ids
-    ] = float("-inf")
-
-    hardest_negative_scores = negative_scores.max(dim=1).values
-
-    margins = positive_scores - hardest_negative_scores
-
-    print("\n===== RETRIEVAL DIAGNOSTICS =====")
-
-    print(
-        "Average positive rank:",
-        positive_ranks.float().mean().item()
-    )
-
-    print(
-        "Median positive rank:",
-        positive_ranks.float().median().item()
-    )
-
-    print(
-        "Queries with positive ranked first:",
-        (positive_ranks == 1).sum().item()
-    )
-
-    print(
-        "Queries with positive outside top 5:",
-        (positive_ranks > 5).sum().item()
-    )
-
-    print(
-        "Queries with negative margins:",
-        (margins < 0).sum().item()
-    )
-
-    print(
-        "Average positive-negative margin:",
-        margins.mean().item()
-    )
-
-    for k in [1, 5, 20, 100]:
-        recall = (positive_ranks <= k).float().mean().item()
-
-        print(f"Recall@{k}: {recall:.4f}")
-
-    # Diagnose how well the model ranks the known positive
-
-    query_id = 0
-    positive_id = 0
-
-    query_scores = scores[query_id].clone()
-
-    positive_score = query_scores[positive_id].item()
-
-    ranked_indices = torch.argsort(
-        query_scores,
-        descending=True
-    )
-
-    positive_rank = (
-        (ranked_indices == positive_id)
-        .nonzero(as_tuple=True)[0]
-        .item() + 1
-    )
-
-    negative_scores = query_scores.clone()
-    negative_scores[positive_id] = float("-inf")
-
-    hardest_negative_score = negative_scores.max().item()
-
-    margin = positive_score - hardest_negative_score
-
-    print("\nPOSITIVE RANK DIAGNOSTIC")
-    print("Positive passage score:", positive_score)
-    print("Positive passage rank:", positive_rank)
-    print("Hardest negative score:", hardest_negative_score)
-    print("Positive-negative margin:", margin)
-
-
-    # Diagnostic: compare dot product and cosine similarity
-
-    q_norms = torch.linalg.vector_norm(Q, dim=1)
-    p_norms = torch.linalg.vector_norm(P, dim=1)
-
-    print("\nEmbedding norms:")
-    print("Average question norm:", q_norms.mean().item())
-    print("Average passage norm:", p_norms.mean().item())
-    print("Min passage norm:", p_norms.min().item())
-    print("Max passage norm:", p_norms.max().item())
-
-    cosine_scores = (
-        F.normalize(Q, p=2, dim=1)
-        @ F.normalize(P, p=2, dim=1).T
-    )
-
-    # Compare both ranking strategies for query 0
-    query_id = 0
-
-    dot_scores = scores[query_id].clone()
-    cos_scores = cosine_scores[query_id].clone()
-
-    # Exclude the known positive passage
-    dot_scores[query_id] = float("-inf")
-    cos_scores[query_id] = float("-inf")
-
-    dot_top = torch.topk(dot_scores, k=4)
-    cos_top = torch.topk(cos_scores, k=4)
-
-    print("\nTop 4 by dot product:")
-    for idx, value in zip(dot_top.indices, dot_top.values):
-        print(
-            f"Passage {idx.item()} | "
-            f"Score {value.item():.4f} | "
-            f"Norm {p_norms[idx].item():.4f}"
-        )
-
-    print("\nTop 4 by cosine similarity:")
-    for idx, value in zip(cos_top.indices, cos_top.values):
-        print(
-            f"Passage {idx.item()} | "
-            f"Score {value.item():.4f} | "
-            f"Norm {p_norms[idx].item():.4f}"
-        )
-
-
-    print("Similarity matrix:", scores.shape)
-
-    # 10. Exclude each question's known positive passage
-    positive_ids = torch.arange(len(questions))
-
-    scores[
-        torch.arange(len(questions)),
-        positive_ids
-    ] = float("-inf")
-
-    # Retrieve more candidates than we need
-    candidate_values, candidate_indices = torch.topk(
-        scores,
-        k=50,
-        dim=1
-    )
-
-    # Collect answer-aware hard negatives
-    filtered_indices = []
-    filtered_scores = []
-
-    for query_id in range(len(questions)):
-        answers = dataset.examples[query_id]["answers"]
-
-        selected_ids = []
-        selected_scores = []
-
-        for passage_id, score in zip(
-            candidate_indices[query_id],
-            candidate_values[query_id]
-        ):
-            passage_id = passage_id.item()
-            passage_text = passages[passage_id].lower()
-
-            # Reject passages containing an annotated answer
-            contains_answer = any(
-                answer.strip().lower() in passage_text
-                for answer in answers
-                if answer.strip()
-            )
-
-            if contains_answer:
-                continue
-
-            selected_ids.append(passage_id)
-            selected_scores.append(score.item())
-
-            if len(selected_ids) == 4:
-                break
-
-        if len(selected_ids) != 4:
-            raise ValueError(
-                f"Only found {len(selected_ids)} negatives "
-                f"for query {query_id}. Increase candidate pool."
-            )
-
-        filtered_indices.append(selected_ids)
-        filtered_scores.append(selected_scores)
-
-    indices = torch.tensor(filtered_indices, dtype=torch.long)
-    values = torch.tensor(filtered_scores, dtype=torch.float32)
-
-    print("Filtered hard-negative indices:", indices.shape)
-
-    print("Hard negative indices shape:", indices.shape)
-
-    # 12. Inspect the first question
-    query_id = 0
-
-    print("\nQUESTION:")
-    print(questions[query_id])
-
-    print("\nPOSITIVE PASSAGE:")
-    print(passages[query_id][:400])
-
-    print("\nMINED HARD NEGATIVE CANDIDATES:")
-
-    for rank, passage_id in enumerate(indices[query_id], start=1):
-        passage_id = passage_id.item()
-
-        print(f"\nRank {rank}")
-        print("Passage ID:", passage_id)
-        print("Similarity:", values[query_id, rank - 1].item())
-        print("Passage:", passages[passage_id][:400])
-
-    # 13. Save mining results
-    torch.save(
-        {
-            "questions": questions,
-            "passages": passages,
-            "hard_negative_indices": indices,
-            "hard_negative_scores": values
-        },
-        "mined_negatives.pt"
-    )
-
-    print("\nSaved mining results to mined_negatives.pt")
+    P = encode_texts(model, tokenizer, passages, "passage", device, args.batch_size, 192)
+    Q = encode_texts(model, tokenizer, questions, "question", device, args.batch_size, 48)
+    print("Passage embeddings:", tuple(P.shape))
+    print("Question embeddings:", tuple(Q.shape))
+
+    indices, values, diagnostics = mine(Q, P, answers_by_query, passages, args.num_hard)
+    assert indices.shape == (args.num_questions, args.num_hard)
+    assert all(i not in indices[i].tolist() for i in range(args.num_questions))
+    print("Hard-negative indices:", tuple(indices.shape))
+    print("Diagnostics:", json.dumps(diagnostics, indent=2))
+
+    print("\nExample question:", questions[0])
+    print("Positive passage:", passages[0][:200])
+    for rank, j in enumerate(indices[0].tolist(), 1):
+        print(f"Hard negative {rank} (passage {j}, score {values[0, rank-1]:.3f}):", passages[j][:200])
+
+    manifest = {
+        "version": "v3",
+        "split": "train",
+        "dataset": "squad",
+        "selection": "first unique contexts; one question per passage",
+        "num_questions": args.num_questions,
+        "num_passages": args.num_passages,
+        "num_hard": args.num_hard,
+        "positive_passage_id_rule": "question_id_equals_passage_id",
+        "passages_sha256": passage_hash,
+        "questions_sha256": question_hash,
+        "model_name": MODEL_NAME,
+        "checkpoint": args.checkpoint,
+        "seed": args.seed,
+        "question_max_length": 48,
+        "passage_max_length": 192,
+        "negative_filter": "exclude known positive and annotated-answer substring casefold",
+        "diagnostics": diagnostics,
+    }
+    output_dir.mkdir(parents=True, exist_ok=True)
+    torch.save({"passages": passages, "embeddings": P,
+                "passages_sha256": passage_hash}, output_dir / "passage_index.pt")
+    torch.save({"questions": questions, "passages": passages,
+                "hard_negative_indices": indices,
+                "hard_negative_scores": values,
+                "positive_passage_ids": torch.arange(args.num_questions),
+                "questions_sha256": question_hash,
+                "passages_sha256": passage_hash}, output_dir / "mined_negatives.pt")
+    (output_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    print("Saved V3 mining artifacts to:", output_dir)
 
 
 if __name__ == "__main__":

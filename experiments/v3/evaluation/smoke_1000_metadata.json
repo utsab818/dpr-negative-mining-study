@@ -1,0 +1,13 @@
+{
+  "split": "validation",
+  "num_pairs": 1000,
+  "question_sha256": "57afd2558d4698a62d13e25cd67a5d43c8197dd17c81a9a125276a5740fe094b",
+  "passage_sha256": "7c1274831c7f4d2b8acebbbf7810d8554650dbd46eaf4897c974885b98ebb7b9",
+  "model_name": "distilbert-base-uncased",
+  "question_max_length": 48,
+  "passage_max_length": 192,
+  "device": "mps",
+  "batch_size": 8,
+  "positive_definition": "paired context at the same dataset index",
+  "note": "Single annotated positive per query; other relevant passages may be unannotated"
+}
