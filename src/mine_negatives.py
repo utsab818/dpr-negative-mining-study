@@ -12,6 +12,7 @@ Full run (intended for Colab A100):
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 
 import torch
@@ -77,12 +78,18 @@ def mine(Q, P, answers_by_query, passages, num_hard):
     rejected_answer_counts = []
     scanned_counts = []
     folded_passages = [p.casefold() for p in passages]
+    short_answer_queries = 0
 
     for i in range(n_questions):
         # Return sorted IDs for this question; one row at a time avoids
         # allocating another full [num_questions, num_passages] ranking matrix.
         ranking = torch.argsort(scores[i], descending=True)
         answers = [a.strip().casefold() for a in answers_by_query[i] if a.strip()]
+        # Match full answer tokens/phrases, not substrings inside unrelated words.
+        # Example: 'in' must not match 'training'. The boundary is Unicode-aware.
+        patterns = [re.compile(r"(?<!\w)" + re.escape(a) + r"(?!\w)") for a in answers]
+        if any(len(a) <= 2 for a in answers):
+            short_answer_queries += 1
         chosen = []
         rejected = 0
         examined = 0
@@ -91,7 +98,7 @@ def mine(Q, P, answers_by_query, passages, num_hard):
             if j == i:
                 continue
             examined += 1
-            if any(answer in folded_passages[j] for answer in answers):
+            if any(pattern.search(folded_passages[j]) for pattern in patterns):
                 rejected += 1
                 continue
             chosen.append(j)
@@ -99,7 +106,11 @@ def mine(Q, P, answers_by_query, passages, num_hard):
                 break
 
         if len(chosen) < num_hard:
-            raise RuntimeError(f"Only {len(chosen)} valid negatives for query {i}")
+            raise RuntimeError(
+                f"Only {len(chosen)} valid negatives for query {i}; "
+                f"answers={answers!r}, candidate_passages={n_passages}. "
+                "Review the answer filter; do not silently accept possible false negatives."
+            )
         hard_ids[i] = torch.tensor(chosen, dtype=torch.long)
         hard_scores[i] = scores[i, chosen]
         rejected_answer_counts.append(rejected)
@@ -116,13 +127,14 @@ def mine(Q, P, answers_by_query, passages, num_hard):
         "recall_at_20": float((positive_ranks <= 20).float().mean().item()),
         "mean_answer_rejections_per_query": sum(rejected_answer_counts) / n_questions,
         "total_answer_rejections": sum(rejected_answer_counts),
+        "queries_with_short_answers_len_le_2": short_answer_queries,
         "max_candidates_scanned_for_one_query": max(scanned_counts),
     }
     return hard_ids, hard_scores, diagnostics
 
 
 def main():
-    parser = argparse.ArgumentParser(description="V3 DPR hard-negative miner")
+    parser = argparse.ArgumentParser(description="V4 DPR hard-negative miner (word-boundary answer filtering)")
     parser.add_argument("--num-questions", type=int, default=2000)
     parser.add_argument("--num-passages", type=int, default=5000)
     parser.add_argument("--num-hard", type=int, default=4)
@@ -187,7 +199,7 @@ def main():
         print(f"Hard negative {rank} (passage {j}, score {values[0, rank-1]:.3f}):", passages[j][:200])
 
     manifest = {
-        "version": "v3",
+        "version": "v4-word-boundary-filter",
         "split": "train",
         "dataset": "squad",
         "selection": "first unique contexts; one question per passage",
@@ -202,7 +214,7 @@ def main():
         "seed": args.seed,
         "question_max_length": 48,
         "passage_max_length": 192,
-        "negative_filter": "exclude known positive and annotated-answer substring casefold",
+        "negative_filter": "exclude known positive and Unicode word/phrase-boundary annotated answer regex; casefold",
         "diagnostics": diagnostics,
     }
     output_dir.mkdir(parents=True, exist_ok=True)

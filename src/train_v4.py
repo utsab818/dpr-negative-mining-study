@@ -11,6 +11,7 @@ import csv
 import hashlib
 import json
 import random
+import re
 import time
 from pathlib import Path
 
@@ -115,8 +116,9 @@ def train(args):
     # V4: avoid materializing O(num_questions * num_passages) random-candidate lists.
     # Rejection-sample eligible passages on demand (unbiased over eligible IDs).
     folded_passages = [p.casefold() for p in passages] if args.strategy == "random" else None
-    folded_answers = (
-        [[a.strip().casefold() for a in example["answers"] if a.strip()]
+    answer_patterns = (
+        [[re.compile(r"(?<!\w)" + re.escape(a.strip().casefold()) + r"(?!\w)")
+          for a in example["answers"] if a.strip()]
          for example in dataset.examples]
         if args.strategy == "random" else None
     )
@@ -188,7 +190,7 @@ def train(args):
                             j = negative_rng.randrange(len(passages))
                             if j == i or j in selected_set:
                                 continue
-                            if any(a in folded_passages[j] for a in folded_answers[i]):
+                            if any(pattern.search(folded_passages[j]) for pattern in answer_patterns[i]):
                                 continue
                             selected.append(j)
                             selected_set.add(j)
