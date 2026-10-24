@@ -1,0 +1,33 @@
+Device: cuda
+
+Generating train split:   0%|          | 0/87599 [00:00<?, ? examples/s]
+Generating train split:  78%|███████▊  | 68000/87599 [00:00<00:00, 673452.86 examples/s]
+Generating train split: 100%|██████████| 87599/87599 [00:00<00:00, 727224.00 examples/s]
+
+Generating validation split:   0%|          | 0/10570 [00:00<?, ? examples/s]
+Generating validation split: 100%|██████████| 10570/10570 [00:00<00:00, 742758.90 examples/s]
+Unique question/passage pairs: 2000
+Steps per full epoch: 62
+Optimizer steps: 62
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792847087.804982     965 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792847087.876218     965 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792847090.283489     965 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792847090.284087     965 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Starting checkpoint: pretrained encoders (fresh DPR warm-up)
+Step 1 | Scores (32, 32) | Loss 8.9798 | Elapsed 1.7s
+Step 10 | Scores (32, 32) | Loss 0.3876 | Elapsed 2.9s
+Step 20 | Scores (32, 32) | Loss 0.9333 | Elapsed 4.3s
+Step 30 | Scores (32, 32) | Loss 0.5294 | Elapsed 5.7s
+Step 40 | Scores (32, 32) | Loss 0.3822 | Elapsed 7.1s
+Step 50 | Scores (32, 32) | Loss 0.1810 | Elapsed 8.5s
+Step 60 | Scores (32, 32) | Loss 0.2102 | Elapsed 9.9s
+Step 62 | Scores (32, 32) | Loss 0.3218 | Elapsed 10.1s
+Average loss: 0.7640060365440384
+Training seconds: 10.148152371999998
+CUDA peak allocated GB: 3.7079854011535645
+Saved: experiments/v3/warmup/full/dpr_warmup_n2000_b32_seed42_steps62.pt
+Metadata: experiments/v3/warmup/full/dpr_warmup_n2000_b32_seed42_steps62.json
+Step log: experiments/v3/warmup/full/dpr_warmup_n2000_b32_seed42_steps62_steps.csv

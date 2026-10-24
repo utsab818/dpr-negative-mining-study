@@ -1,0 +1,10 @@
+{
+  "name": "03_train_random",
+  "git_commit": "fde8abd4a6ee39965877f9f61547215b7c6b1727",
+  "seconds": 59.44,
+  "outputs": [
+    "experiments/v3/training/full/dpr_random_k4_b33_seed42_steps60.pt",
+    "experiments/v3/training/full/dpr_random_k4_b33_seed42_steps60.json",
+    "experiments/v3/training/full/dpr_random_k4_b33_seed42_steps60_steps.csv"
+  ]
+}

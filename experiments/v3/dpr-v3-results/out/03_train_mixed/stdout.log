@@ -1,0 +1,26 @@
+Device: cuda
+GPU: NVIDIA A100-SXM4-40GB
+Strategy: mixed Seed: 42
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792847263.457577    2017 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792847263.530105    2017 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792847265.938574    2017 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792847265.939086    2017 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Step 1 | Scores (33, 37) | Loss 1.9907 | Elapsed 0.9s
+Step 10 | Scores (33, 37) | Loss 1.7966 | Elapsed 6.1s
+Step 20 | Scores (33, 37) | Loss 1.2440 | Elapsed 11.8s
+Step 30 | Scores (33, 37) | Loss 0.9510 | Elapsed 17.5s
+Step 40 | Scores (33, 37) | Loss 0.9075 | Elapsed 23.2s
+Step 50 | Scores (33, 37) | Loss 0.7342 | Elapsed 28.9s
+Step 60 | Scores (33, 37) | Loss 1.3284 | Elapsed 34.6s
+Total optimizer steps: 60
+Query exposures: 1980
+Passage encoder inputs: 9900
+Average loss: 1.2409033507108689
+Training seconds: 34.58484494999999
+CUDA peak allocated GB: 11.378
+Saved: experiments/v3/training/full/dpr_mixed_k4_b33_seed42_steps60.pt
+Metrics: experiments/v3/training/full/dpr_mixed_k4_b33_seed42_steps60.json
+Per-step log: experiments/v3/training/full/dpr_mixed_k4_b33_seed42_steps60_steps.csv

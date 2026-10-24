@@ -1,0 +1,48 @@
+Device: cuda
+Validation pairs: 1000
+
+===== WARMUP =====
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792847338.529044    2470 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792847338.597742    2470 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792847341.006201    2470 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792847341.006755    2470 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Similarity matrix shape: (1000, 1000)
+recall@1: 0.5210
+recall@5: 0.8130
+recall@20: 0.9470
+mrr@10: 0.6431
+
+===== RANDOM =====
+Similarity matrix shape: (1000, 1000)
+recall@1: 0.4730
+recall@5: 0.7760
+recall@20: 0.9370
+mrr@10: 0.6013
+
+===== HARD =====
+Similarity matrix shape: (1000, 1000)
+recall@1: 0.6090
+recall@5: 0.8370
+recall@20: 0.9500
+mrr@10: 0.7069
+
+===== MIXED =====
+Similarity matrix shape: (1000, 1000)
+recall@1: 0.6250
+recall@5: 0.8470
+recall@20: 0.9570
+mrr@10: 0.7241
+
+===== INBATCH =====
+Similarity matrix shape: (1000, 1000)
+recall@1: 0.5450
+recall@5: 0.8360
+recall@20: 0.9530
+mrr@10: 0.6679
+
+Results saved to experiments/v3/evaluation/full/seed42_1000.csv
+Per-query ranks saved to experiments/v3/evaluation/full/seed42_1000_query_ranks.csv
+Metadata saved to experiments/v3/evaluation/full/seed42_1000_metadata.json

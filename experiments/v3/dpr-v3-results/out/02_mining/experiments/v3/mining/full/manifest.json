@@ -1,0 +1,31 @@
+{
+  "version": "v3",
+  "split": "train",
+  "dataset": "squad",
+  "selection": "first unique contexts; one question per passage",
+  "num_questions": 2000,
+  "num_passages": 5000,
+  "num_hard": 4,
+  "positive_passage_id_rule": "question_id_equals_passage_id",
+  "passages_sha256": "0bb8a567ba7d7de9441c8a78400e68d8d2c931a5c702eb26a3fd3bee28c5f144",
+  "questions_sha256": "ec8572fc0f7c0e52490ed639e1637239535cda55d97d6dd29c1b3c969e1ac894",
+  "model_name": "distilbert-base-uncased",
+  "checkpoint": "experiments/v3/warmup/full/dpr_warmup_n2000_b32_seed42_steps62.pt",
+  "seed": 42,
+  "question_max_length": 48,
+  "passage_max_length": 192,
+  "negative_filter": "exclude known positive and annotated-answer substring casefold",
+  "diagnostics": {
+    "mean_positive_rank": 10.779500007629395,
+    "median_positive_rank": 2.0,
+    "positive_rank_1_count": 951,
+    "negative_margin_count": 1049,
+    "mean_positive_negative_margin": -0.30631765723228455,
+    "recall_at_1": 0.4754999876022339,
+    "recall_at_5": 0.7570000290870667,
+    "recall_at_20": 0.9139999747276306,
+    "mean_answer_rejections_per_query": 0.436,
+    "total_answer_rejections": 872,
+    "max_candidates_scanned_for_one_query": 129
+  }
+}

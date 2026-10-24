@@ -1,0 +1,10 @@
+{
+  "name": "02_mining",
+  "git_commit": "fde8abd4a6ee39965877f9f61547215b7c6b1727",
+  "seconds": 35.14,
+  "outputs": [
+    "experiments/v3/mining/full/mined_negatives.pt",
+    "experiments/v3/mining/full/passage_index.pt",
+    "experiments/v3/mining/full/manifest.json"
+  ]
+}

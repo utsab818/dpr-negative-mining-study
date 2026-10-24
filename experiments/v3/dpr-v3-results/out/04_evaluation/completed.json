@@ -1,0 +1,10 @@
+{
+  "name": "04_evaluation",
+  "git_commit": "fde8abd4a6ee39965877f9f61547215b7c6b1727",
+  "seconds": 26.47,
+  "outputs": [
+    "experiments/v3/evaluation/full/seed42_1000.csv",
+    "experiments/v3/evaluation/full/seed42_1000_query_ranks.csv",
+    "experiments/v3/evaluation/full/seed42_1000_metadata.json"
+  ]
+}

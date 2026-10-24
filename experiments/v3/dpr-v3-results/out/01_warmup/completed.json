@@ -1,0 +1,10 @@
+{
+  "name": "01_warmup",
+  "git_commit": "fde8abd4a6ee39965877f9f61547215b7c6b1727",
+  "seconds": 34.34,
+  "outputs": [
+    "experiments/v3/warmup/full/dpr_warmup_n2000_b32_seed42_steps62.pt",
+    "experiments/v3/warmup/full/dpr_warmup_n2000_b32_seed42_steps62.json",
+    "experiments/v3/warmup/full/dpr_warmup_n2000_b32_seed42_steps62_steps.csv"
+  ]
+}
