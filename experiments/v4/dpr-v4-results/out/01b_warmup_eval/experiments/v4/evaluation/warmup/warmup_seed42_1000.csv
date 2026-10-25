@@ -1,0 +1,2 @@
+strategy,checkpoint,recall@1,recall@5,recall@20,mrr@10
+warmup,experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624.pt,0.6370000243186951,0.8920000195503235,0.9750000238418579,0.7474313378334045

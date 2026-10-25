@@ -1,0 +1,27 @@
+{
+  "name": "02_mining",
+  "git_commit": "105bb0e99a9e7cfd03db2cb64bdaa827d21ec4f9",
+  "args": [
+    "src.mine_negatives",
+    "--num-questions",
+    "10000",
+    "--num-passages",
+    "15000",
+    "--num-hard",
+    "4",
+    "--batch-size",
+    "32",
+    "--seed",
+    "42",
+    "--checkpoint",
+    "experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624.pt",
+    "--output-dir",
+    "experiments/v4/mining/full"
+  ],
+  "seconds": 230.79,
+  "artifacts": [
+    "experiments/v4/mining/full/mined_negatives.pt",
+    "experiments/v4/mining/full/passage_index.pt",
+    "experiments/v4/mining/full/manifest.json"
+  ]
+}

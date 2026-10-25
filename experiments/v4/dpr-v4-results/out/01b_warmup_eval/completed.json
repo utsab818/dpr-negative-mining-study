@@ -1,0 +1,20 @@
+{
+  "name": "01b_warmup_eval",
+  "git_commit": "105bb0e99a9e7cfd03db2cb64bdaa827d21ec4f9",
+  "args": [
+    "src.evaluate",
+    "--checkpoint",
+    "warmup=experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624.pt",
+    "--max-samples",
+    "1000",
+    "--batch-size",
+    "16",
+    "--output",
+    "experiments/v4/evaluation/warmup/warmup_seed42_1000.csv"
+  ],
+  "seconds": 21.3,
+  "artifacts": [
+    "experiments/v4/evaluation/warmup/warmup_seed42_1000.csv",
+    "experiments/v4/evaluation/warmup/warmup_seed42_1000_metadata.json"
+  ]
+}

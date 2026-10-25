@@ -1,0 +1,26 @@
+Device: cuda
+GPU: NVIDIA A100-SXM4-40GB
+Strategy: inbatch Seed: 42
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936761.491108   10269 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936761.563760   10269 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936763.959939   10269 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936763.960469   10269 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Step 1 | Scores (33, 33) | Loss 0.4506 | Elapsed 0.5s
+Step 50 | Scores (33, 33) | Loss 0.0010 | Elapsed 7.4s
+Step 100 | Scores (33, 33) | Loss 0.0224 | Elapsed 14.4s
+Step 150 | Scores (33, 33) | Loss 0.0049 | Elapsed 21.5s
+Step 200 | Scores (33, 33) | Loss 0.0943 | Elapsed 28.5s
+Step 250 | Scores (33, 33) | Loss 0.0069 | Elapsed 35.5s
+Step 300 | Scores (33, 33) | Loss 0.0013 | Elapsed 42.6s
+Total optimizer steps: 300
+Query exposures: 9900
+Passage encoder inputs: 9900
+Average loss: 0.03923430117486229
+Training seconds: 42.550750634999986
+CUDA peak allocated GB: 3.914
+Saved: experiments/v4/training/full/dpr_inbatch_k32_b33_seed42_steps300.pt
+Metrics: experiments/v4/training/full/dpr_inbatch_k32_b33_seed42_steps300.json
+Per-step log: experiments/v4/training/full/dpr_inbatch_k32_b33_seed42_steps300_steps.csv

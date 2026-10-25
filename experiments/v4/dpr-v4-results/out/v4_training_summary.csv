@@ -1,0 +1,5 @@
+strategy,optimizer_steps,query_exposures,passage_encoder_input_count,train_seconds,cuda_peak_allocated_gb,mean_train_loss
+random,300,9900,49500,172.125,11.512,0.010384728656113479
+hard,300,9900,49500,171.033,11.512,0.8373446367184321
+mixed,300,9900,49500,171.107,11.511,0.8615428107976913
+inbatch,300,9900,9900,42.551,3.914,0.03923430117486229

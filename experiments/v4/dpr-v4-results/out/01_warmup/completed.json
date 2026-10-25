@@ -1,0 +1,23 @@
+{
+  "name": "01_warmup",
+  "git_commit": "105bb0e99a9e7cfd03db2cb64bdaa827d21ec4f9",
+  "args": [
+    "src.warmup_v3",
+    "--max-samples",
+    "10000",
+    "--batch-size",
+    "32",
+    "--epochs",
+    "2",
+    "--seed",
+    "42",
+    "--output-dir",
+    "experiments/v4/warmup/full"
+  ],
+  "seconds": 116.76,
+  "artifacts": [
+    "experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624.pt",
+    "experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624.json",
+    "experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624_steps.csv"
+  ]
+}

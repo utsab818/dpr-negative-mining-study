@@ -1,0 +1,32 @@
+{
+  "version": "v4-word-boundary-filter",
+  "split": "train",
+  "dataset": "squad",
+  "selection": "first unique contexts; one question per passage",
+  "num_questions": 10000,
+  "num_passages": 15000,
+  "num_hard": 4,
+  "positive_passage_id_rule": "question_id_equals_passage_id",
+  "passages_sha256": "383422a97502c6a952ef7c879aee42bcd29d5665b37c1f9bbadc676a4c1cc11c",
+  "questions_sha256": "1d987bdff019913476c733301e6ce33e8e60df7a255df24d5490700485610bd7",
+  "model_name": "distilbert-base-uncased",
+  "checkpoint": "experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624.pt",
+  "seed": 42,
+  "question_max_length": 48,
+  "passage_max_length": 192,
+  "negative_filter": "exclude known positive and Unicode word/phrase-boundary annotated answer regex; casefold",
+  "diagnostics": {
+    "mean_positive_rank": 4.878900051116943,
+    "median_positive_rank": 1.0,
+    "positive_rank_1_count": 6022,
+    "negative_margin_count": 3978,
+    "mean_positive_negative_margin": 0.7438905239105225,
+    "recall_at_1": 0.6021999716758728,
+    "recall_at_5": 0.8514000177383423,
+    "recall_at_20": 0.9562000036239624,
+    "mean_answer_rejections_per_query": 0.3642,
+    "total_answer_rejections": 3642,
+    "queries_with_short_answers_len_le_2": 182,
+    "max_candidates_scanned_for_one_query": 48
+  }
+}

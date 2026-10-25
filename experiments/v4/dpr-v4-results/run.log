@@ -1,0 +1,456 @@
+===== VM 1 (A100) 2026-10-25 19:27:20 =====
+
+[colab] A new version of Colab CLI is available: 0.7.5 (current: 0.7.4)
+[colab] Run 'colab update' to update.
+[colab] To silence this check, set "enable_update_check": false in ~/.config/colab-cli/settings.json
+
+[colab] Parsing notebook 'notebook.ipynb'...
+[colab] Executing cell 1/10 - d872a304...
+GPU: NVIDIA A100-SXM4-40GB | VRAM: 39.5 GB
+Confirmed persistent Drive output: /content/dpr_v4_a100_seed42
+[colab] Executing cell 2/10 - 412921b5...
+Source commit: 105bb0e99a9e7cfd03db2cb64bdaa827d21ec4f9
+torch: 2.11.0+cu130 transformers: 4.57.6 datasets: 4.8.5
+[colab] Executing cell 3/10 - d894f33a...
+CompletedProcess(args=['/usr/bin/python3', '-c', 'from src.data import 
+DPRDataset\nn_train, n_passages = 10000, 15000\ndata = DPRDataset(split="train",
+max_samples=n_passages)\nassert len(data.examples) == n_passages, 
+(len(data.examples), n_passages)\nassert len({e["passage"] for e in 
+data.examples}) == n_passages\nassert all(e["question"] and e["passage"] for e 
+in data.examples[:n_train])\nprint("Dataset verified:", n_train, "training 
+queries in", n_passages, "unique passages")'], returncode=0)
+[colab] Executing cell 4/10 - 87ec2dd2...
+[colab] Executing cell 5/10 - dd992b3d...
+RUN: 01_warmup src.warmup_v3 --max-samples 10000 --batch-size 32 --epochs 2 --seed 42 --output-dir experiments/v4/warmup/full
+Device: cuda
+Unique question/passage pairs: 10000
+Steps per full epoch: 312
+Optimizer steps: 624
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792935812.563627    5933 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792935812.634176    5933 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792935815.074815    5933 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792935815.075395    5933 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Starting checkpoint: pretrained encoders (fresh DPR warm-up)
+Step 1 | Scores (32, 32) | Loss 8.0952 | Elapsed 1.4s
+Step 10 | Scores (32, 32) | Loss 0.6725 | Elapsed 2.7s
+Step 20 | Scores (32, 32) | Loss 0.5620 | Elapsed 4.1s
+Step 30 | Scores (32, 32) | Loss 0.2156 | Elapsed 5.5s
+Step 40 | Scores (32, 32) | Loss 0.6699 | Elapsed 6.9s
+Step 50 | Scores (32, 32) | Loss 0.4038 | Elapsed 8.3s
+Step 60 | Scores (32, 32) | Loss 0.7733 | Elapsed 9.7s
+Step 70 | Scores (32, 32) | Loss 0.4926 | Elapsed 11.1s
+Step 80 | Scores (32, 32) | Loss 0.0320 | Elapsed 12.4s
+Step 90 | Scores (32, 32) | Loss 0.3305 | Elapsed 13.8s
+Step 100 | Scores (32, 32) | Loss 0.0195 | Elapsed 15.2s
+Step 110 | Scores (32, 32) | Loss 0.0738 | Elapsed 16.6s
+Step 120 | Scores (32, 32) | Loss 0.0986 | Elapsed 18.0s
+Step 130 | Scores (32, 32) | Loss 0.1596 | Elapsed 19.4s
+Step 140 | Scores (32, 32) | Loss 0.1669 | Elapsed 20.8s
+Step 150 | Scores (32, 32) | Loss 0.0405 | Elapsed 22.2s
+Step 160 | Scores (32, 32) | Loss 0.1206 | Elapsed 23.6s
+Step 170 | Scores (32, 32) | Loss 0.0070 | Elapsed 24.9s
+Step 180 | Scores (32, 32) | Loss 0.0644 | Elapsed 26.3s
+Step 190 | Scores (32, 32) | Loss 0.2329 | Elapsed 27.7s
+Step 200 | Scores (32, 32) | Loss 0.1513 | Elapsed 29.1s
+Step 210 | Scores (32, 32) | Loss 0.0329 | Elapsed 30.5s
+Step 220 | Scores (32, 32) | Loss 0.0340 | Elapsed 31.9s
+Step 230 | Scores (32, 32) | Loss 0.0699 | Elapsed 33.3s
+Step 240 | Scores (32, 32) | Loss 0.0056 | Elapsed 34.6s
+Step 250 | Scores (32, 32) | Loss 0.1589 | Elapsed 36.0s
+Step 260 | Scores (32, 32) | Loss 0.0615 | Elapsed 37.4s
+Step 270 | Scores (32, 32) | Loss 0.1753 | Elapsed 38.8s
+Step 280 | Scores (32, 32) | Loss 0.1828 | Elapsed 40.2s
+Step 290 | Scores (32, 32) | Loss 0.1982 | Elapsed 41.6s
+Step 300 | Scores (32, 32) | Loss 0.4885 | Elapsed 43.0s
+Step 310 | Scores (32, 32) | Loss 0.0847 | Elapsed 44.4s
+Step 320 | Scores (32, 32) | Loss 0.0755 | Elapsed 45.7s
+Step 330 | Scores (32, 32) | Loss 0.0126 | Elapsed 47.1s
+Step 340 | Scores (32, 32) | Loss 0.0863 | Elapsed 48.5s
+Step 350 | Scores (32, 32) | Loss 0.0096 | Elapsed 49.9s
+Step 360 | Scores (32, 32) | Loss 0.0111 | Elapsed 51.3s
+Step 370 | Scores (32, 32) | Loss 0.1348 | Elapsed 52.7s
+Step 380 | Scores (32, 32) | Loss 0.0371 | Elapsed 54.1s
+Step 390 | Scores (32, 32) | Loss 0.1097 | Elapsed 55.4s
+Step 400 | Scores (32, 32) | Loss 0.0038 | Elapsed 56.8s
+Step 410 | Scores (32, 32) | Loss 0.0216 | Elapsed 58.2s
+Step 420 | Scores (32, 32) | Loss 0.0776 | Elapsed 59.6s
+Step 430 | Scores (32, 32) | Loss 0.1568 | Elapsed 61.0s
+Step 440 | Scores (32, 32) | Loss 0.0585 | Elapsed 62.4s
+Step 450 | Scores (32, 32) | Loss 0.0095 | Elapsed 63.7s
+Step 460 | Scores (32, 32) | Loss 0.0122 | Elapsed 65.1s
+Step 470 | Scores (32, 32) | Loss 0.0695 | Elapsed 66.5s
+Step 480 | Scores (32, 32) | Loss 0.0399 | Elapsed 67.9s
+Step 490 | Scores (32, 32) | Loss 0.0440 | Elapsed 69.3s
+Step 500 | Scores (32, 32) | Loss 0.0029 | Elapsed 70.7s
+Step 510 | Scores (32, 32) | Loss 0.0546 | Elapsed 72.1s
+Step 520 | Scores (32, 32) | Loss 0.0423 | Elapsed 73.5s
+Step 530 | Scores (32, 32) | Loss 0.0238 | Elapsed 74.8s
+Step 540 | Scores (32, 32) | Loss 0.3562 | Elapsed 76.2s
+Step 550 | Scores (32, 32) | Loss 0.0051 | Elapsed 77.6s
+Step 560 | Scores (32, 32) | Loss 0.0219 | Elapsed 79.0s
+Step 570 | Scores (32, 32) | Loss 0.0826 | Elapsed 80.4s
+Step 580 | Scores (32, 32) | Loss 0.0115 | Elapsed 81.8s
+Step 590 | Scores (32, 32) | Loss 0.0238 | Elapsed 83.1s
+Step 600 | Scores (32, 32) | Loss 0.0130 | Elapsed 84.5s
+Step 610 | Scores (32, 32) | Loss 0.0207 | Elapsed 85.9s
+Step 620 | Scores (32, 32) | Loss 0.0492 | Elapsed 87.3s
+Step 624 | Scores (32, 32) | Loss 0.0042 | Elapsed 87.9s
+Average loss: 0.1529503682990113
+Training seconds: 87.87143440900013
+CUDA peak allocated GB: 3.8428750038146973
+Saved: experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624.pt
+Metadata: experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624.json
+Step log: experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624_steps.csv
+PERSISTED: 01_warmup at /content/dpr_v4_a100_seed42/01_warmup
+[colab] Executing cell 6/10 - 4bddedf2...
+RUN: 01b_warmup_eval src.evaluate --checkpoint warmup=experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624.pt --max-samples 1000 --batch-size 16 --output experiments/v4/evaluation/warmup/warmup_seed42_1000.csv
+Device: cuda
+Validation pairs: 1000
+
+===== WARMUP =====
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792935923.702058    6506 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792935923.771272    6506 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792935926.138290    6506 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792935926.138839    6506 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Similarity matrix shape: (1000, 1000)
+recall@1: 0.6370
+recall@5: 0.8920
+recall@20: 0.9750
+mrr@10: 0.7474
+
+Results saved to experiments/v4/evaluation/warmup/warmup_seed42_1000.csv
+Metadata saved to experiments/v4/evaluation/warmup/warmup_seed42_1000_metadata.json
+PERSISTED: 01b_warmup_eval at /content/dpr_v4_a100_seed42/01b_warmup_eval
+| strategy | checkpoint | recall@1 | recall@5 | recall@20 | mrr@10              
+---|---|---|---|---|---|---                                                     
+0 | warmup | experiments/v4/warmup/full/dpr_warmup_n10000_b... | 0.637 | 0.892 |
+0.975 | 0.747431                                                                
+[colab] Executing cell 7/10 - de65befc...
+RUN: 02_mining src.mine_negatives --num-questions 10000 --num-passages 15000 --num-hard 4 --batch-size 32 --seed 42 --checkpoint experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624.pt --output-dir experiments/v4/mining/full
+Device: cuda
+Questions: 10000 Passages: 15000
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792935948.695655    6662 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792935948.765435    6662 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792935950.962100    6662 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792935950.962628    6662 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Encoded passages: 32/15000
+Encoded passages: 800/15000
+Encoded passages: 1600/15000
+Encoded passages: 2400/15000
+Encoded passages: 3200/15000
+Encoded passages: 4000/15000
+Encoded passages: 4800/15000
+Encoded passages: 5600/15000
+Encoded passages: 6400/15000
+Encoded passages: 7200/15000
+Encoded passages: 8000/15000
+Encoded passages: 8800/15000
+Encoded passages: 9600/15000
+Encoded passages: 10400/15000
+Encoded passages: 11200/15000
+Encoded passages: 12000/15000
+Encoded passages: 12800/15000
+Encoded passages: 13600/15000
+Encoded passages: 14400/15000
+Encoded questions: 32/10000
+Encoded questions: 800/10000
+Encoded questions: 1600/10000
+Encoded questions: 2400/10000
+Encoded questions: 3200/10000
+Encoded questions: 4000/10000
+Encoded questions: 4800/10000
+Encoded questions: 5600/10000
+Encoded questions: 6400/10000
+Encoded questions: 7200/10000
+Encoded questions: 8000/10000
+Encoded questions: 8800/10000
+Encoded questions: 9600/10000
+Passage embeddings: (15000, 768)
+Question embeddings: (10000, 768)
+Hard-negative indices: (10000, 4)
+Diagnostics: {
+  "mean_positive_rank": 4.878900051116943,
+  "median_positive_rank": 1.0,
+  "positive_rank_1_count": 6022,
+  "negative_margin_count": 3978,
+  "mean_positive_negative_margin": 0.7438905239105225,
+  "recall_at_1": 0.6021999716758728,
+  "recall_at_5": 0.8514000177383423,
+  "recall_at_20": 0.9562000036239624,
+  "mean_answer_rejections_per_query": 0.3642,
+  "total_answer_rejections": 3642,
+  "queries_with_short_answers_len_le_2": 182,
+  "max_candidates_scanned_for_one_query": 48
+}
+
+Example question: To whom did the Virgin Mary allegedly appear in 1858 in Lourdes France?
+Positive passage: Architecturally, the school has a Catholic character. Atop the Main Building's gold dome is a golden statue of the Virgin Mary. Immediately in front of the Main Building and facing it, is a copper sta
+Hard negative 1 (passage 6929, score 54.883): Mary had been venerated since Early Christianity, and is considered by millions to be the most meritorious saint of the religion. The Eastern and Oriental Orthodox, Roman Catholic, Anglican, and Luthe
+Hard negative 2 (passage 6911, score 54.109): Mary is also depicted as being present among the women at the crucifixion during the crucifixion standing near "the disciple whom Jesus loved" along with Mary of Clopas and Mary Magdalene,[Jn 19:25-26
+Hard negative 3 (passage 12247, score 53.330): The presence of the Virgin Mary under the cross[Jn. 19:26-27] has in itself been the subject of Marian art, and well known Catholic symbolism such as the Miraculous Medal and Pope John Paul II's Coat 
+Hard negative 4 (passage 6940, score 53.078): Roman Catholics believe in the Immaculate Conception of Mary, as proclaimed Ex Cathedra by Pope Pius IX in 1854, namely that she was filled with grace from the very moment of her conception in her mot
+Saved V3 mining artifacts to: experiments/v4/mining/full
+PERSISTED: 02_mining at /content/dpr_v4_a100_seed42/02_mining
+Mining positive-ID and duplicate checks passed
+[colab] Executing cell 8/10 - df1bace1...
+RUN: 03_train_random src.train_v4 --strategy random --mined-path experiments/v4/mining/full/mined_negatives.pt --warmup-path experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624.pt --output-dir experiments/v4/training/full --batch-size 33 --num-negatives 4 --seed 42 --max-steps 300 --log-every 50
+Device: cuda
+GPU: NVIDIA A100-SXM4-40GB
+Strategy: random Seed: 42
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936179.735234    7681 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936179.805196    7681 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936181.968208    7681 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936181.968729    7681 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Step 1 | Scores (33, 5) | Loss 0.0007 | Elapsed 0.9s
+Step 50 | Scores (33, 5) | Loss 0.0000 | Elapsed 29.0s
+Step 100 | Scores (33, 5) | Loss 0.0006 | Elapsed 57.7s
+Step 150 | Scores (33, 5) | Loss 0.0001 | Elapsed 86.3s
+Step 200 | Scores (33, 5) | Loss 0.0208 | Elapsed 114.9s
+Step 250 | Scores (33, 5) | Loss 0.0649 | Elapsed 143.5s
+Step 300 | Scores (33, 5) | Loss 0.0001 | Elapsed 172.1s
+Total optimizer steps: 300
+Query exposures: 9900
+Passage encoder inputs: 49500
+Average loss: 0.010384728656113479
+Training seconds: 172.12527946499995
+CUDA peak allocated GB: 11.512
+Saved: experiments/v4/training/full/dpr_random_k4_b33_seed42_steps300.pt
+Metrics: experiments/v4/training/full/dpr_random_k4_b33_seed42_steps300.json
+Per-step log: experiments/v4/training/full/dpr_random_k4_b33_seed42_steps300_steps.csv
+PERSISTED: 03_train_random at /content/dpr_v4_a100_seed42/03_train_random
+RUN: 03_train_hard src.train_v4 --strategy hard --mined-path experiments/v4/mining/full/mined_negatives.pt --warmup-path experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624.pt --output-dir experiments/v4/training/full --batch-size 33 --num-negatives 4 --seed 42 --max-steps 300 --log-every 50
+Device: cuda
+GPU: NVIDIA A100-SXM4-40GB
+Strategy: hard Seed: 42
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936374.217544    8549 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936374.290422    8549 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936376.668068    8549 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936376.668591    8549 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Step 1 | Scores (33, 5) | Loss 1.9188 | Elapsed 0.9s
+Step 50 | Scores (33, 5) | Loss 0.9112 | Elapsed 28.8s
+Step 100 | Scores (33, 5) | Loss 0.6539 | Elapsed 57.2s
+Step 150 | Scores (33, 5) | Loss 0.6869 | Elapsed 85.7s
+Step 200 | Scores (33, 5) | Loss 0.8475 | Elapsed 114.2s
+Step 250 | Scores (33, 5) | Loss 1.0871 | Elapsed 142.6s
+Step 300 | Scores (33, 5) | Loss 0.9504 | Elapsed 171.0s
+Total optimizer steps: 300
+Query exposures: 9900
+Passage encoder inputs: 49500
+Average loss: 0.8373446367184321
+Training seconds: 171.03285607999987
+CUDA peak allocated GB: 11.512
+Saved: experiments/v4/training/full/dpr_hard_k4_b33_seed42_steps300.pt
+Metrics: experiments/v4/training/full/dpr_hard_k4_b33_seed42_steps300.json
+Per-step log: experiments/v4/training/full/dpr_hard_k4_b33_seed42_steps300_steps.csv
+PERSISTED: 03_train_hard at /content/dpr_v4_a100_seed42/03_train_hard
+RUN: 03_train_mixed src.train_v4 --strategy mixed --mined-path experiments/v4/mining/full/mined_negatives.pt --warmup-path experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624.pt --output-dir experiments/v4/training/full --batch-size 33 --num-negatives 4 --seed 42 --max-steps 300 --log-every 50
+Device: cuda
+GPU: NVIDIA A100-SXM4-40GB
+Strategy: mixed Seed: 42
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936567.993759    9409 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936568.064955    9409 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936570.507342    9409 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936570.507870    9409 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Step 1 | Scores (33, 37) | Loss 1.9327 | Elapsed 0.9s
+Step 50 | Scores (33, 37) | Loss 0.8766 | Elapsed 28.9s
+Step 100 | Scores (33, 37) | Loss 0.6681 | Elapsed 57.3s
+Step 150 | Scores (33, 37) | Loss 0.7015 | Elapsed 85.8s
+Step 200 | Scores (33, 37) | Loss 0.8837 | Elapsed 114.2s
+Step 250 | Scores (33, 37) | Loss 1.1180 | Elapsed 142.7s
+Step 300 | Scores (33, 37) | Loss 1.0303 | Elapsed 171.1s
+Total optimizer steps: 300
+Query exposures: 9900
+Passage encoder inputs: 49500
+Average loss: 0.8615428107976913
+Training seconds: 171.1066645410001
+CUDA peak allocated GB: 11.511
+Saved: experiments/v4/training/full/dpr_mixed_k4_b33_seed42_steps300.pt
+Metrics: experiments/v4/training/full/dpr_mixed_k4_b33_seed42_steps300.json
+Per-step log: experiments/v4/training/full/dpr_mixed_k4_b33_seed42_steps300_steps.csv
+PERSISTED: 03_train_mixed at /content/dpr_v4_a100_seed42/03_train_mixed
+RUN: 03_train_inbatch src.train_v4 --strategy inbatch --mined-path experiments/v4/mining/full/mined_negatives.pt --warmup-path experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624.pt --output-dir experiments/v4/training/full --batch-size 33 --num-negatives 32 --seed 42 --max-steps 300 --log-every 50
+Device: cuda
+GPU: NVIDIA A100-SXM4-40GB
+Strategy: inbatch Seed: 42
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936761.491108   10269 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936761.563760   10269 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936763.959939   10269 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936763.960469   10269 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Step 1 | Scores (33, 33) | Loss 0.4506 | Elapsed 0.5s
+Step 50 | Scores (33, 33) | Loss 0.0010 | Elapsed 7.4s
+Step 100 | Scores (33, 33) | Loss 0.0224 | Elapsed 14.4s
+Step 150 | Scores (33, 33) | Loss 0.0049 | Elapsed 21.5s
+Step 200 | Scores (33, 33) | Loss 0.0943 | Elapsed 28.5s
+Step 250 | Scores (33, 33) | Loss 0.0069 | Elapsed 35.5s
+Step 300 | Scores (33, 33) | Loss 0.0013 | Elapsed 42.6s
+Total optimizer steps: 300
+Query exposures: 9900
+Passage encoder inputs: 9900
+Average loss: 0.03923430117486229
+Training seconds: 42.550750634999986
+CUDA peak allocated GB: 3.914
+Saved: experiments/v4/training/full/dpr_inbatch_k32_b33_seed42_steps300.pt
+Metrics: experiments/v4/training/full/dpr_inbatch_k32_b33_seed42_steps300.json
+Per-step log: experiments/v4/training/full/dpr_inbatch_k32_b33_seed42_steps300_steps.csv
+PERSISTED: 03_train_inbatch at /content/dpr_v4_a100_seed42/03_train_inbatch
+Checkpoints: {'random': 'experiments/v4/training/full/dpr_random_k4_b33_seed42_steps300.pt', 'hard': 'experiments/v4/training/full/dpr_hard_k4_b33_seed42_steps300.pt', 'mixed': 'experiments/v4/training/full/dpr_mixed_k4_b33_seed42_steps300.pt', 'inbatch': 'experiments/v4/training/full/dpr_inbatch_k32_b33_seed42_steps300.pt'}
+[colab] Executing cell 9/10 - 3e952eee...
+RUN: 04_evaluation_1000 src.evaluate --checkpoint warmup=experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624.pt --checkpoint random=experiments/v4/training/full/dpr_random_k4_b33_seed42_steps300.pt --checkpoint hard=experiments/v4/training/full/dpr_hard_k4_b33_seed42_steps300.pt --checkpoint mixed=experiments/v4/training/full/dpr_mixed_k4_b33_seed42_steps300.pt --checkpoint inbatch=experiments/v4/training/full/dpr_inbatch_k32_b33_seed42_steps300.pt --max-samples 1000 --batch-size 16 --save-query-ranks --output experiments/v4/evaluation/validation_1000/seed42_1000.csv
+Device: cuda
+Validation pairs: 1000
+
+===== WARMUP =====
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936824.667553   10605 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936824.739705   10605 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936827.120818   10605 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936827.121325   10605 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Similarity matrix shape: (1000, 1000)
+recall@1: 0.6370
+recall@5: 0.8920
+recall@20: 0.9750
+mrr@10: 0.7474
+
+===== RANDOM =====
+Similarity matrix shape: (1000, 1000)
+recall@1: 0.4940
+recall@5: 0.8150
+recall@20: 0.9510
+mrr@10: 0.6281
+
+===== HARD =====
+Similarity matrix shape: (1000, 1000)
+recall@1: 0.7250
+recall@5: 0.8950
+recall@20: 0.9740
+mrr@10: 0.7998
+
+===== MIXED =====
+Similarity matrix shape: (1000, 1000)
+recall@1: 0.7390
+recall@5: 0.9220
+recall@20: 0.9860
+mrr@10: 0.8172
+
+===== INBATCH =====
+Similarity matrix shape: (1000, 1000)
+recall@1: 0.6010
+recall@5: 0.8550
+recall@20: 0.9640
+mrr@10: 0.7116
+
+Results saved to experiments/v4/evaluation/validation_1000/seed42_1000.csv
+Per-query ranks saved to experiments/v4/evaluation/validation_1000/seed42_1000_query_ranks.csv
+Metadata saved to experiments/v4/evaluation/validation_1000/seed42_1000_metadata.json
+PERSISTED: 04_evaluation_1000 at /content/dpr_v4_a100_seed42/04_evaluation_1000
+VALIDATION SIZE 1000
+| strategy | checkpoint | recall@1 | recall@5 | recall@20 | mrr@10              
+---|---|---|---|---|---|---                                                     
+0 | warmup | experiments/v4/warmup/full/dpr_warmup_n10000_b... | 0.637 | 0.892 |
+0.975 | 0.747431                                                                
+1 | random | experiments/v4/training/full/dpr_random_k4_b33... | 0.494 | 0.815 |
+0.951 | 0.628144                                                                
+2 | hard | experiments/v4/training/full/dpr_hard_k4_b33_s... | 0.725 | 0.895 |  
+0.974 | 0.799754                                                                
+3 | mixed | experiments/v4/training/full/dpr_mixed_k4_b33_... | 0.739 | 0.922 | 
+0.986 | 0.817249                                                                
+4 | inbatch | experiments/v4/training/full/dpr_inbatch_k32_b... | 0.601 | 0.855 
+| 0.964 | 0.711586                                                              
+RUN: 04_evaluation_2000 src.evaluate --checkpoint warmup=experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624.pt --checkpoint random=experiments/v4/training/full/dpr_random_k4_b33_seed42_steps300.pt --checkpoint hard=experiments/v4/training/full/dpr_hard_k4_b33_seed42_steps300.pt --checkpoint mixed=experiments/v4/training/full/dpr_mixed_k4_b33_seed42_steps300.pt --checkpoint inbatch=experiments/v4/training/full/dpr_inbatch_k32_b33_seed42_steps300.pt --max-samples 2000 --batch-size 16 --save-query-ranks --output experiments/v4/evaluation/validation_2000/seed42_2000.csv
+Device: cuda
+Validation pairs: 2000
+
+===== WARMUP =====
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936857.817873   10809 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936857.887296   10809 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936860.277554   10809 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936860.278104   10809 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Similarity matrix shape: (2000, 2000)
+recall@1: 0.6270
+recall@5: 0.8805
+recall@20: 0.9625
+mrr@10: 0.7357
+
+===== RANDOM =====
+Similarity matrix shape: (2000, 2000)
+recall@1: 0.4925
+recall@5: 0.7995
+recall@20: 0.9405
+mrr@10: 0.6215
+
+===== HARD =====
+Similarity matrix shape: (2000, 2000)
+recall@1: 0.7195
+recall@5: 0.8850
+recall@20: 0.9575
+mrr@10: 0.7924
+
+===== MIXED =====
+Similarity matrix shape: (2000, 2000)
+recall@1: 0.7465
+recall@5: 0.9120
+recall@20: 0.9725
+mrr@10: 0.8188
+
+===== INBATCH =====
+Similarity matrix shape: (2000, 2000)
+recall@1: 0.5950
+recall@5: 0.8515
+recall@20: 0.9575
+mrr@10: 0.7054
+
+Results saved to experiments/v4/evaluation/validation_2000/seed42_2000.csv
+Per-query ranks saved to experiments/v4/evaluation/validation_2000/seed42_2000_query_ranks.csv
+Metadata saved to experiments/v4/evaluation/validation_2000/seed42_2000_metadata.json
+PERSISTED: 04_evaluation_2000 at /content/dpr_v4_a100_seed42/04_evaluation_2000
+VALIDATION SIZE 2000
+| strategy | checkpoint | recall@1 | recall@5 | recall@20 | mrr@10              
+---|---|---|---|---|---|---                                                     
+0 | warmup | experiments/v4/warmup/full/dpr_warmup_n10000_b... | 0.6270 | 0.8805
+| 0.9625 | 0.735692                                                             
+1 | random | experiments/v4/training/full/dpr_random_k4_b33... | 0.4925 | 0.7995
+| 0.9405 | 0.621462                                                             
+2 | hard | experiments/v4/training/full/dpr_hard_k4_b33_s... | 0.7195 | 0.8850 |
+0.9575 | 0.792376                                                               
+3 | mixed | experiments/v4/training/full/dpr_mixed_k4_b33_... | 0.7465 | 0.9120 
+| 0.9725 | 0.818837                                                             
+4 | inbatch | experiments/v4/training/full/dpr_inbatch_k32_b... | 0.5950 |      
+0.8515 | 0.9575 | 0.705393                                                      
+[colab] Executing cell 10/10 - 2a9df766...
+| strategy | optimizer_steps | query_exposures | passage_encoder_input_count |  
+train_seconds | cuda_peak_allocated_gb | mean_train_loss                        
+---|---|---|---|---|---|---|---                                                 
+0 | random | 300 | 9900 | 49500 | 172.125 | 11.512 | 0.010385                   
+1 | hard | 300 | 9900 | 49500 | 171.033 | 11.512 | 0.837345                     
+2 | mixed | 300 | 9900 | 49500 | 171.107 | 11.511 | 0.861543                    
+3 | inbatch | 300 | 9900 | 9900 | 42.551 | 3.914 | 0.039234                     
+Google Drive experiment folder: /content/dpr_v4_a100_seed42
+Metrics summary: /content/dpr_v4_a100_seed42/v4_training_summary.csv
+All completed artifacts are under this persistent Drive folder.
+[colab] Saving notebook with outputs to 'notebook_output.ipynb'...

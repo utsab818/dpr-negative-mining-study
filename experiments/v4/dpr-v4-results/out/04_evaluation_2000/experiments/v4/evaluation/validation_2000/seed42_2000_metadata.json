@@ -1,0 +1,13 @@
+{
+  "split": "validation",
+  "num_pairs": 2000,
+  "question_sha256": "e795ede0f346fe7e75025d647f8911bf1c8aaa02c0415b3193cfd55e9a4d35fb",
+  "passage_sha256": "91ba4af0bf9bd9243ac75c11fbadea30a5a58f75995a8949e0e18d05c7d11344",
+  "model_name": "distilbert-base-uncased",
+  "question_max_length": 48,
+  "passage_max_length": 192,
+  "device": "cuda",
+  "batch_size": 16,
+  "positive_definition": "paired context at the same dataset index",
+  "note": "Single annotated positive per query; other relevant passages may be unannotated"
+}

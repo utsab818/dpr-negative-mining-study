@@ -1,0 +1,31 @@
+{
+  "name": "03_train_random",
+  "git_commit": "105bb0e99a9e7cfd03db2cb64bdaa827d21ec4f9",
+  "args": [
+    "src.train_v4",
+    "--strategy",
+    "random",
+    "--mined-path",
+    "experiments/v4/mining/full/mined_negatives.pt",
+    "--warmup-path",
+    "experiments/v4/warmup/full/dpr_warmup_n10000_b32_seed42_steps624.pt",
+    "--output-dir",
+    "experiments/v4/training/full",
+    "--batch-size",
+    "33",
+    "--num-negatives",
+    "4",
+    "--seed",
+    "42",
+    "--max-steps",
+    "300",
+    "--log-every",
+    "50"
+  ],
+  "seconds": 195.05,
+  "artifacts": [
+    "experiments/v4/training/full/dpr_random_k4_b33_seed42_steps300.pt",
+    "experiments/v4/training/full/dpr_random_k4_b33_seed42_steps300.json",
+    "experiments/v4/training/full/dpr_random_k4_b33_seed42_steps300_steps.csv"
+  ]
+}

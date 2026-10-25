@@ -1,0 +1,26 @@
+Device: cuda
+GPU: NVIDIA A100-SXM4-40GB
+Strategy: hard Seed: 42
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936374.217544    8549 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936374.290422    8549 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936376.668068    8549 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936376.668591    8549 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Step 1 | Scores (33, 5) | Loss 1.9188 | Elapsed 0.9s
+Step 50 | Scores (33, 5) | Loss 0.9112 | Elapsed 28.8s
+Step 100 | Scores (33, 5) | Loss 0.6539 | Elapsed 57.2s
+Step 150 | Scores (33, 5) | Loss 0.6869 | Elapsed 85.7s
+Step 200 | Scores (33, 5) | Loss 0.8475 | Elapsed 114.2s
+Step 250 | Scores (33, 5) | Loss 1.0871 | Elapsed 142.6s
+Step 300 | Scores (33, 5) | Loss 0.9504 | Elapsed 171.0s
+Total optimizer steps: 300
+Query exposures: 9900
+Passage encoder inputs: 49500
+Average loss: 0.8373446367184321
+Training seconds: 171.03285607999987
+CUDA peak allocated GB: 11.512
+Saved: experiments/v4/training/full/dpr_hard_k4_b33_seed42_steps300.pt
+Metrics: experiments/v4/training/full/dpr_hard_k4_b33_seed42_steps300.json
+Per-step log: experiments/v4/training/full/dpr_hard_k4_b33_seed42_steps300_steps.csv

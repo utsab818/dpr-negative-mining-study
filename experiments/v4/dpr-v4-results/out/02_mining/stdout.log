@@ -1,0 +1,66 @@
+Device: cuda
+Questions: 10000 Passages: 15000
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792935948.695655    6662 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792935948.765435    6662 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792935950.962100    6662 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792935950.962628    6662 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Encoded passages: 32/15000
+Encoded passages: 800/15000
+Encoded passages: 1600/15000
+Encoded passages: 2400/15000
+Encoded passages: 3200/15000
+Encoded passages: 4000/15000
+Encoded passages: 4800/15000
+Encoded passages: 5600/15000
+Encoded passages: 6400/15000
+Encoded passages: 7200/15000
+Encoded passages: 8000/15000
+Encoded passages: 8800/15000
+Encoded passages: 9600/15000
+Encoded passages: 10400/15000
+Encoded passages: 11200/15000
+Encoded passages: 12000/15000
+Encoded passages: 12800/15000
+Encoded passages: 13600/15000
+Encoded passages: 14400/15000
+Encoded questions: 32/10000
+Encoded questions: 800/10000
+Encoded questions: 1600/10000
+Encoded questions: 2400/10000
+Encoded questions: 3200/10000
+Encoded questions: 4000/10000
+Encoded questions: 4800/10000
+Encoded questions: 5600/10000
+Encoded questions: 6400/10000
+Encoded questions: 7200/10000
+Encoded questions: 8000/10000
+Encoded questions: 8800/10000
+Encoded questions: 9600/10000
+Passage embeddings: (15000, 768)
+Question embeddings: (10000, 768)
+Hard-negative indices: (10000, 4)
+Diagnostics: {
+  "mean_positive_rank": 4.878900051116943,
+  "median_positive_rank": 1.0,
+  "positive_rank_1_count": 6022,
+  "negative_margin_count": 3978,
+  "mean_positive_negative_margin": 0.7438905239105225,
+  "recall_at_1": 0.6021999716758728,
+  "recall_at_5": 0.8514000177383423,
+  "recall_at_20": 0.9562000036239624,
+  "mean_answer_rejections_per_query": 0.3642,
+  "total_answer_rejections": 3642,
+  "queries_with_short_answers_len_le_2": 182,
+  "max_candidates_scanned_for_one_query": 48
+}
+
+Example question: To whom did the Virgin Mary allegedly appear in 1858 in Lourdes France?
+Positive passage: Architecturally, the school has a Catholic character. Atop the Main Building's gold dome is a golden statue of the Virgin Mary. Immediately in front of the Main Building and facing it, is a copper sta
+Hard negative 1 (passage 6929, score 54.883): Mary had been venerated since Early Christianity, and is considered by millions to be the most meritorious saint of the religion. The Eastern and Oriental Orthodox, Roman Catholic, Anglican, and Luthe
+Hard negative 2 (passage 6911, score 54.109): Mary is also depicted as being present among the women at the crucifixion during the crucifixion standing near "the disciple whom Jesus loved" along with Mary of Clopas and Mary Magdalene,[Jn 19:25-26
+Hard negative 3 (passage 12247, score 53.330): The presence of the Virgin Mary under the cross[Jn. 19:26-27] has in itself been the subject of Marian art, and well known Catholic symbolism such as the Miraculous Medal and Pope John Paul II's Coat 
+Hard negative 4 (passage 6940, score 53.078): Roman Catholics believe in the Immaculate Conception of Mary, as proclaimed Ex Cathedra by Pope Pius IX in 1854, namely that she was filled with grace from the very moment of her conception in her mot
+Saved V3 mining artifacts to: experiments/v4/mining/full

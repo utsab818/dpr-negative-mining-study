@@ -1,0 +1,48 @@
+Device: cuda
+Validation pairs: 2000
+
+===== WARMUP =====
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936857.817873   10809 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936857.887296   10809 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792936860.277554   10809 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1792936860.278104   10809 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+Similarity matrix shape: (2000, 2000)
+recall@1: 0.6270
+recall@5: 0.8805
+recall@20: 0.9625
+mrr@10: 0.7357
+
+===== RANDOM =====
+Similarity matrix shape: (2000, 2000)
+recall@1: 0.4925
+recall@5: 0.7995
+recall@20: 0.9405
+mrr@10: 0.6215
+
+===== HARD =====
+Similarity matrix shape: (2000, 2000)
+recall@1: 0.7195
+recall@5: 0.8850
+recall@20: 0.9575
+mrr@10: 0.7924
+
+===== MIXED =====
+Similarity matrix shape: (2000, 2000)
+recall@1: 0.7465
+recall@5: 0.9120
+recall@20: 0.9725
+mrr@10: 0.8188
+
+===== INBATCH =====
+Similarity matrix shape: (2000, 2000)
+recall@1: 0.5950
+recall@5: 0.8515
+recall@20: 0.9575
+mrr@10: 0.7054
+
+Results saved to experiments/v4/evaluation/validation_2000/seed42_2000.csv
+Per-query ranks saved to experiments/v4/evaluation/validation_2000/seed42_2000_query_ranks.csv
+Metadata saved to experiments/v4/evaluation/validation_2000/seed42_2000_metadata.json
